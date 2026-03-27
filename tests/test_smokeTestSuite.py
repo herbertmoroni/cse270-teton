@@ -9,10 +9,13 @@ from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from selenium.webdriver.firefox.options import Options
 
 class TestSmokeTestSuite():
   def setup_method(self, method):
-    self.driver = webdriver.Firefox()
+    opts = Options()
+    opts.add_argument("--headless")    
+    self.driver = webdriver.Firefox(options=opts)
     self.vars = {}
   
   def teardown_method(self, method):
@@ -58,7 +61,12 @@ class TestSmokeTestSuite():
     self.driver.find_element(By.LINK_TEXT, "Join").click()
     elements = self.driver.find_elements(By.NAME, "fname")
     assert len(elements) > 0
+    self.driver.find_element(By.NAME, "fname").send_keys("Test")
+    self.driver.find_element(By.NAME, "lname").send_keys("User")
+    self.driver.find_element(By.NAME, "bizname").send_keys("Test Business")
+    self.driver.find_element(By.NAME, "biztitle").send_keys("Owner")
     self.driver.find_element(By.NAME, "submit").click()
+    WebDriverWait(self.driver, 10).until(expected_conditions.presence_of_element_located((By.NAME, "email")))
     elements = self.driver.find_elements(By.NAME, "email")
     assert len(elements) > 0
   
